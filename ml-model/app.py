@@ -1,8 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import joblib
+import pandas as pd
 
 app = Flask(__name__)
-CORS(app)  # Allow cross-origin requests from frontend/backend
+CORS(app)  # Enable CORS for frontend access
+
+# Load your trained model
+model = joblib.load("calorie_predictor.pkl")
 
 @app.route('/')
 def home():
@@ -18,35 +23,38 @@ def predict():
         return jsonify({'error': 'Missing required fields'}), 400
 
     try:
+        # Convert data to ML model input format
         age = int(data['age'])
-        gender = data['gender']
+        gender = 1 if data['gender'] == 'male' else 0
         height = float(data['height'])
         weight = float(data['weight'])
-        activity = data['activityLevel']
 
-        # ✅ Dummy calorie prediction (replace with ML model later)
-        base_calories = (10 * weight) + (6.25 * height) - (5 * age)
-        if gender == 'male':
-            base_calories += 5
-        else:
-            base_calories -= 161
-
-        activity_multipliers = {
+        activity_map = {
             'sedentary': 1.2,
             'light': 1.375,
             'moderate': 1.55,
             'very': 1.725,
             'extra': 1.9
         }
+        activity = activity_map.get(data['activityLevel'], 1.2)
 
-        multiplier = activity_multipliers.get(activity, 1.2)
-        predicted = round(base_calories * multiplier)
+        # Make prediction
+        input_df = pd.DataFrame([{
+            'age': age,
+            'gender': gender,
+            'height': height,
+            'weight': weight,
+            'activity': activity
+        }])
 
-        return jsonify({'predictedCalories': predicted})
+        prediction = model.predict(input_df)[0]
+        predicted_calories = int(round(prediction))
+
+        return jsonify({'predictedCalories': predicted_calories})
 
     except Exception as e:
-        print("🚨 Flask Error:", str(e))
-        return jsonify({'error': 'Server error occurred'}), 500
+        print("🚨 Prediction error:", str(e))
+        return jsonify({'error': 'Prediction failed'}), 500
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
