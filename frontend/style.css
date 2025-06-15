@@ -1,25 +1,59 @@
 body {
-    background-color: rgb(37, 31, 31);
-    color: antiquewhite;
-  font-family: Arial;
-  padding: 20px;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #a6e5dc, #6dcbd7);
+  color: #333;
 }
 
-form input, form select {
-    background-color: rgb(255, 197, 111);
-  margin: 5px;
-  padding: 8px;
-  width: 200px;
+.container {
+  max-width: 500px;
+  margin: 50px auto;
+  text-align: center;
+  padding: 0 20px;
+}
+
+h1 {
+  color: #006358;
+  margin-bottom: 10px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+input, select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 button {
-    background-color: rgb(255, 197, 111);
-  padding: 10px 15px;
-  margin-top: 10px;
+  padding: 12px;
+  font-size: 16px;
+  background-color: #00796b;
+  color: white;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-#result {
+button:hover {
+  background-color: #004d40;
+}
+
+.result-box {
   margin-top: 20px;
+  font-size: 20px;
+  color: #056d61;
   font-weight: bold;
 }
