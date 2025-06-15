@@ -1,28 +1,30 @@
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import joblib
 
-# Sample training data (you can use real data later)
-data = {
-    'age': [21, 25, 30, 35, 40, 20, 28, 32, 19, 45],
-    'gender': [1, 0, 1, 0, 1, 0, 1, 0, 0, 1],
-    'height': [170, 160, 175, 165, 180, 158, 168, 155, 162, 178],
-    'weight': [67, 55, 75, 60, 85, 58, 72, 52, 50, 90],
-    'activity': [1.2, 1.55, 1.375, 1.2, 1.725, 1.2, 1.55, 1.375, 1.2, 1.9],
-    'calories': [2000, 1800, 2500, 1900, 2800, 1700, 2400, 1600, 1500, 3000]
-}
-
-
-df = pd.DataFrame(data)
+# Load dataset
+df = pd.read_csv('calories.csv')
+df['Gender'] = df['Gender'].map({'male': 1, 'female': 0})
 
 # Features and target
-X = df[['age', 'gender', 'height', 'weight', 'activity']]
-y = df['calories']
+X = df[['Gender', 'Age', 'Height', 'Weight', 'Duration', 'Heart_Rate', 'Body_Temp']]
+y = df['Calories']
+
+# Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Train model
-model = LinearRegression()
-model.fit(X, y)
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train, y_train)
+
+# Evaluate
+y_pred = model.predict(X_test)
+print("✅ R² score:", r2_score(y_test, y_pred))
+print("📉 MSE:", mean_squared_error(y_test, y_pred))
+print("📊 MAE:", mean_absolute_error(y_test, y_pred))
 
 # Save model
 joblib.dump(model, 'calorie_predictor.pkl')
-print("Model trained and saved.")
+print("✅ Model trained and saved as calorie_predictor.pkl")
